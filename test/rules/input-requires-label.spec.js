@@ -72,4 +72,35 @@ describe('Rules: '+ruleId, function(){
         });
     });
 
+
+    describe('Extended error cases', function() {
+
+        // would be handled by id-unique, but it may not be enabled
+        it('2 input tags with same id and only 1 label results in error', function () {
+            var code = '<input id="foo" /> <label for="foo"/> <input id="foo" />';
+            var messages = HTMLHint.verify(code, ruleOptions);
+            expect(messages.length).to.be(1);
+            expect(messages[0].rule.id).to.be(ruleId);
+            expect(messages[0].line).to.be(1);
+            expect(messages[0].col).to.be(45);
+            expect(messages[0].type).to.be('warning');
+        });
+
+        it('2 label tags with same for value as an input id results in error', function () {
+            var code = '<label for="foo" /> <label for="foo"/> <input id="foo" />';
+            var messages = HTMLHint.verify(code, ruleOptions);
+            expect(messages.length).to.be(1);
+            expect(messages[0].rule.id).to.be(ruleId);
+            expect(messages[0].line).to.be(1);
+            expect(messages[0].col).to.be(27);
+            expect(messages[0].type).to.be('warning');
+        });
+
+        it('2 label tags with same for value and no input should not error', function () {
+            var code = '<label for="foo" /> <label for="foo"/>';
+            var messages = HTMLHint.verify(code, ruleOptions);
+            expect(messages.length).to.be(0);
+        });
+    });
+
 });
